@@ -1,5 +1,13 @@
+using BakeryManager.Repository;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
+//ConnectionDb GetConnectionString("ConnectedDb")
+builder.Services.AddDbContext<DataContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration["ConnectionStrings:ConnectedDb"]);
+});
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
