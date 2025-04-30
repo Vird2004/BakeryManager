@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <Folder Include="Areas\" />
-    <Folder Include="Repository\" />
   </ItemGroup>
 
 </Project>
