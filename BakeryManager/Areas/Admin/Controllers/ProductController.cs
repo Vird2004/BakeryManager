@@ -1,5 +1,7 @@
 ﻿using BakeryManager.Repository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace BakeryManager.Areas.Admin.Controllers
 {
@@ -15,9 +17,11 @@ namespace BakeryManager.Areas.Admin.Controllers
         {
             _dataContext = context;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+
+
+            return View(await _dataContext.Products.OrderByDescending(p => p.Id).Include(p => p.Category).ToListAsync());
         }
     }
 }
