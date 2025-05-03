@@ -1,5 +1,6 @@
 ﻿using BakeryManager.Repository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
@@ -22,6 +23,13 @@ namespace BakeryManager.Areas.Admin.Controllers
 
 
             return View(await _dataContext.Products.OrderByDescending(p => p.Id).Include(p => p.Category).ToListAsync());
+        }
+        [Route("Create")]
+        public IActionResult Create()
+        {
+            ViewBag.Categories = new SelectList(_dataContext.Categories, "Id","Name");
+
+            return View();
         }
     }
 }
