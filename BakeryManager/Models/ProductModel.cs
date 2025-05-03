@@ -1,4 +1,5 @@
 ﻿using BakeryManager.Repository.Validation;
+
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -24,7 +25,7 @@ namespace BakeryManager.Models
         public int CategoryId { get; set; }
         public CategoryModel Category { get; set; }
         [NotMapped]
-        [FileExtensions]
+        [FileExtention]
         public IFormFile ImageUpload { get; set; }
     }
 }
