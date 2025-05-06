@@ -71,5 +71,73 @@ namespace BakeryManager.Areas.Admin.Controllers
 
             return View(category);
         }
+        [Route("Edit")]
+        public async Task<IActionResult> Edit(int Id)
+        {
+            CategoryModel category = await _dataContext.Categories.FindAsync(Id);
+            return View(category);
+        }
+
+        [Route("Edit")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(CategoryModel category)
+        {
+            if (ModelState.IsValid)
+            {
+                category.Slug = category.Name.Replace(" ", "-");
+
+                _dataContext.Update(category);
+                await _dataContext.SaveChangesAsync();
+                TempData["success"] = "Cập nhật danh mục thành công";
+                return RedirectToAction("Index");
+
+            }
+            else
+            {
+                TempData["error"] = "Model có một vài thứ đang lỗi";
+                List<string> errors = new List<string>();
+                foreach (var value in ModelState.Values)
+                {
+                    foreach (var error in value.Errors)
+                    {
+                        errors.Add(error.ErrorMessage);
+                    }
+                }
+                string errorMessage = string.Join("\n", errors);
+                return BadRequest(errorMessage);
+            }
+            return View(category);
+        }
+
+        [Route("Delete")]
+        public async Task<IActionResult> Delete(int Id)
+        {
+            // Find the product by Id
+            CategoryModel category = await _dataContext.Categories.FindAsync(Id);
+
+            // Check if the product exists
+            if (category == null)
+            {
+                TempData["error"] = "Sản phẩm không tồn tại.";
+                return RedirectToAction("Index");
+            }
+
+            // Remove the product from the database
+            _dataContext.Categories.Remove(category);
+
+            try
+            {
+                await _dataContext.SaveChangesAsync();
+                TempData["success"] = "Danh mục đã được xóa thành công.";
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (consider using a logging framework)
+                TempData["error"] = "Có lỗi xảy ra khi xóa danh mục: " + ex.Message;
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }
