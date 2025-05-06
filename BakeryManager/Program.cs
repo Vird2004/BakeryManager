@@ -21,6 +21,8 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
+//page 404 Error
+app.UseStatusCodePagesWithRedirects("/Home/Error?statuscode={0}");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -41,6 +43,11 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "Areas",
     pattern: "{areas:exists}/{controller=Product}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "category",
+    pattern: "/category/{Slug?}",
+    defaults : new {controller="Category", action = "Index"});
 
 app.MapControllerRoute(
     name: "default",
