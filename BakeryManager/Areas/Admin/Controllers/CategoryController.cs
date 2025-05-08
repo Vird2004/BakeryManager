@@ -1,5 +1,6 @@
 ﻿using BakeryManager.Models;
 using BakeryManager.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,6 +10,7 @@ namespace BakeryManager.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Route("Admin/Category")]
+    [Authorize]
     public class CategoryController : Controller
     {
 

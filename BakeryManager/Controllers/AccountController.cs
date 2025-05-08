@@ -1,5 +1,6 @@
 ﻿using BakeryManager.Models;
 using BakeryManager.Models.ViewModels;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,7 +31,7 @@ namespace BakeryManager.Controllers
                 Microsoft.AspNetCore.Identity.SignInResult result = await _signInManager.PasswordSignInAsync(loginVM.UserName, loginVM.Password, false, false);
                 if (result.Succeeded)
                 {
-                    //TempData["success"] = "Đăng nhập thành công";
+                    TempData["success"] = "Đăng nhập thành công";
                     //var receiver = "demologin979@gmail.com";
                     //var subject = "Đăng nhập trên thiết bị thành công.";
                     //var message = "Đăng nhập thành công, trải nghiệm dịch vụ nhé.";
@@ -67,6 +68,14 @@ namespace BakeryManager.Controllers
                 }
             }
             return View(user);
+        }
+
+
+        public async Task<IActionResult> Logout(string returnUrl = "/")
+        {
+            await _signInManager.SignOutAsync();
+            await HttpContext.SignOutAsync();
+            return Redirect(returnUrl);
         }
     }
 }
