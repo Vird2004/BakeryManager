@@ -60,7 +60,7 @@
 				<div class="row">
 					<div class="col-sm-4">
 						<div class="logo pull-left">
-							<a href="index.html"><img src="images/home/logo.png" alt="" /></a>
+							<a href="index.html"><img src="images/home/logo.png" width="100px" /></a>
 						</div>
 						<div class="btn-group pull-right">
 							<div class="btn-group">
@@ -369,5 +369,6 @@
 	<script src="~/js/price-range.js"></script>
 	<script src="~/js/jquery.prettyPhoto.js"></script>
 	<script src="~/js/main.js"></script>
+	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
