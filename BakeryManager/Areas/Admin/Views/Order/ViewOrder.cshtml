@@ -1,9 +1,9 @@
-﻿@model IEnumerable<OrderModel>
+﻿@model IEnumerable<OrderDetails>
 @{
-    ViewData["Title"] = "Order Listed";
+    ViewData["Title"] = "Order Details";
 
 }
-<h3>List Order</h3>
+<h3>Order Details</h3>
 
 <table class="table">
     <thead>
@@ -24,7 +24,7 @@
             <tr>
                 <th>#</th>
                 <th scope="row">@item.OrderCode</th>
-                <td>@item.UserName</td>
+                @*<td>@item.UserName</td>
                 <td>@item.OrderDate</td>
                 <td>
                     @if (item.Status == 1)
@@ -36,12 +36,9 @@
                         <span class="text text-danger">Đơn hàng đã xử lý</span>
                     }
 
-             </td>
+                </td>*@
 
-                <td>
-                    <a asp-action="ViewOrder" class="btn btn-warning btn-sm" asp-controller="Order" asp-route-ordercode="@item.OrderCode">View</a>
-                    <a asp-action="Delete" class="btn btn-danger btn-sm confirmDeletion" asp-controller="Order" asp-route-Id="@item.Id">Delete</a>
-                </td>
+               
             </tr>
         }
 
