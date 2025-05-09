@@ -23,5 +23,18 @@ namespace BakeryManager.Areas.Admin.Controllers
         {
             return View(await _dataContext.Orders.OrderByDescending(p => p.Id).ToListAsync());
         }
+        [HttpGet]
+        [Route("ViewOrder")]
+        public async Task<IActionResult> ViewOrder(string ordercode)
+        {
+            var DetailsOrder = await _dataContext.OrderDetails.Include(od => od.Product)
+                .Where(od => od.OrderCode == ordercode).ToListAsync();
+
+            var Order = _dataContext.Orders.Where(o => o.OrderCode == ordercode).First();
+
+            //ViewBag.ShippingCost = Order.ShippingCost;
+            ViewBag.Status = Order.Status;
+            return View(DetailsOrder);
+        }
     }
 }

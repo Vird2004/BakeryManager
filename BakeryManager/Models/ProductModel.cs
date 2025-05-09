@@ -8,7 +8,7 @@ namespace BakeryManager.Models
     public class ProductModel
     {
         [Key]
-        public int Id { get; set; }
+        public long Id { get; set; }
         [Required]
         [StringLength(100, ErrorMessage = "Yêu cầu nhập tên sản phẩm.")]
         public string Name { get; set; }
