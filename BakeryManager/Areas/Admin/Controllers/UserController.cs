@@ -26,7 +26,13 @@ namespace BakeryManager.Areas.Admin.Controllers
         [Route("Index")]
         public async Task<IActionResult> Index()
         {
-            return View(await _userManager.Users.OrderByDescending(p => p.Id).ToListAsync());
+            var usersWithRoles = await (from u in _dataContext.Users
+                                        join ur in _dataContext.UserRoles on u.Id equals ur.UserId
+                                        join r in _dataContext.Roles on ur.RoleId equals r.Id
+                                        select new { User = u, RoleName = r.Name })
+                               .ToListAsync();
+
+            return View(usersWithRoles);
         }
 
         [HttpGet]
@@ -113,13 +119,31 @@ namespace BakeryManager.Areas.Admin.Controllers
         {
             if(ModelState.IsValid)
             {
-                var createUserResult = await _userManager.CreateAsync(user, user.PasswordHash);
-                if (createUserResult.Succeeded) {
+                var createUserResult = await _userManager.CreateAsync(user, user.PasswordHash); //tạo user
+                if (createUserResult.Succeeded)
+                {
+                    var createUser = await _userManager.FindByEmailAsync(user.Email); //tìm user dựa vào email
+                    var userId = createUser.Id; // lấy user Id
+                    var role = _roleManager.FindByIdAsync(user.RoleId); //lấy RoleId
+                                                                        //gán quyền
+                    var addToRoleResult = await _userManager.AddToRoleAsync(createUser, role.Result.Name);
+                    if (!addToRoleResult.Succeeded)
+                    {
+                        foreach (var error in createUserResult.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                    }
+
                     return RedirectToAction("Index", "User");
                 }
                 else
                 {
-                    AddIdentityErrors(createUserResult);
+
+                    foreach (var error in createUserResult.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
                     return View(user);
                 }
             }
