@@ -10,6 +10,8 @@ namespace BakeryManager.Models
         public string? Age { get; set; }
 
         public string PhoneNumber { get; set; }
+
+        public string RoleId { get; set; }
     }
     
     }
