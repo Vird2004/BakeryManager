@@ -22,7 +22,7 @@ namespace BakeryManager.Controllers
             };
             return View(cartVM);
         }
-        public async Task<IActionResult> Add(int Id)
+        public async Task<IActionResult> Add(long Id)
         {
             ProductModel product = await _dataContext.Products.FindAsync(Id);
             List<CartItemModel> cart = HttpContext.Session.GetJson<List<CartItemModel>>("Cart") ?? new List<CartItemModel>();
@@ -93,7 +93,7 @@ namespace BakeryManager.Controllers
             return RedirectToAction("Index");
         }
 
-        public async Task<IActionResult> Remove(int Id)
+        public async Task<IActionResult> Remove(long Id)
         {
             List<CartItemModel> cart = HttpContext.Session.GetJson<List<CartItemModel>>("Cart");
             cart.RemoveAll(p => p.ProductId == Id);

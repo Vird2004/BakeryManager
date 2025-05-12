@@ -11,7 +11,7 @@ namespace BakeryManager.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Route("Admin/Product")]
-    [Authorize]
+    [Authorize(Roles = "Admin, Staff")]
     public class ProductController : Controller
     {
         
