@@ -1,4 +1,5 @@
-﻿using BakeryManager.Models;
+﻿using BakeryManager.Areas.Admin.Repository;
+using BakeryManager.Models;
 using BakeryManager.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,9 +10,15 @@ namespace BakeryManager.Controllers
     public class CheckoutController : Controller
     {
         private readonly DataContext _dataContext;
-        public CheckoutController(DataContext context) 
+        private readonly IEmailSender _emailSender;
+       // private readonly IVnPayService _vnPayService;
+        private static readonly HttpClient client = new HttpClient();
+        public CheckoutController(IEmailSender emailSender, DataContext context) //, IVnPayService vnPayService
         {
             _dataContext = context;
+            _emailSender = emailSender;
+         //   _vnPayService = vnPayService;
+
         }
         public IActionResult Index()
         {
@@ -54,6 +61,14 @@ namespace BakeryManager.Controllers
 
                 }
                 HttpContext.Session.Remove("Cart");
+
+                //Send mail order when success
+                var receiver = userEmail;
+                var subject = "Đặt hàng thành công";
+                var message = "Đặt hàng thành công, trải nghiệm dịch vụ nhé.";
+
+                await _emailSender.SendEmailAsync(receiver, subject, message);
+
                 TempData["success"] = "Đơn hàng đã được tạo,vui lòng chờ duyệt đơn hàng nhé.";
                 return RedirectToAction("Index", "Cart");
             }
