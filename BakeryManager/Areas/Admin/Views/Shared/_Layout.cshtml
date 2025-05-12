@@ -7,6 +7,7 @@
 	<meta name="author" content="">
 	<title>@ViewData["Title"] - Admin Areas</title>
 	<link href="~/css/bootstrap.min.css" rel="stylesheet">
+		<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.21.0/dist/sweetalert2.min.css" rel="stylesheet">
 	<link href="~/css/font-awesome.min.css" rel="stylesheet">
 	<link href="~/css/prettyPhoto.css" rel="stylesheet">
 	<link href="~/css/price-range.css" rel="stylesheet">
@@ -118,6 +119,33 @@
 	<script src="~/js/jquery.prettyPhoto.js"></script>
 	<script src="~/js/main.js"></script>
 	<script src="~/backend/js/site.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.21.0/dist/sweetalert2.all.min.js"></script>
+	<script>
+		$(function () {
+			var success = '@Html.Raw(TempData["success"])';
+			var error = '@Html.Raw(TempData["error"])';
+
+			if (success && success !== '') {
+				Swal.fire({
+					icon: 'success',
+					title: 'Thành công!',
+					text: success,
+					confirmButtonText: 'OK'
+				});
+			}
+
+			if (error && error !== '') {
+				Swal.fire({
+					icon: 'error',
+					title: 'Đã xảy ra lỗi!',
+					text: error,
+					confirmButtonText: 'OK'
+				});
+			}
+		});
+	</script>
+
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
