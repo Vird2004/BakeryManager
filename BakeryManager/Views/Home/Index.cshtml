@@ -22,7 +22,8 @@
 							<p>@item.Name</p>
 							<p>Danh mục: @item.Category.Name</p>
 							</a>
-							<a class="btn btn-default add-to-cart" asp-action="Add" asp-controller="Cart" asp-route-Id="@item.Id"><i class="fa fa-shopping-cart"></i>Add to cart</a>
+							@* <a asp-action="Add" asp-controller="Cart" asp-route-Id="@item.Id" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</a> *@
+							<button class="btn btn-default add-to-cart" data-product_id="@item.Id"><i class="fa fa-shopping-cart"></i>Thêm giỏ hàng</button>
 						</div>
 						
 					</div>
@@ -41,3 +42,41 @@
 
 
 </div>
+
+@section Scripts {
+	<script>
+		$(document).ready(function () {
+			$('.add-to-cart').click(function () {
+				var Id = $(this).data('product_id');
+
+				$.ajax({
+					type: "POST",
+					url: "@Url.Action("Add", "Cart")",
+					data: { Id: Id }, // Gửi ID sản phẩm lên server
+					success: function (result) {
+						if (result.success) {
+							Swal.fire({
+								icon: 'success',
+								title: 'Thành công!',
+								text: 'Sản phẩm đã được thêm vào giỏ hàng.'
+							});
+						} else {
+							Swal.fire({
+								icon: 'error',
+								title: 'Lỗi!',
+								text: result.message || 'Không thể thêm sản phẩm vào giỏ.'
+							});
+						}
+					},
+					error: function () {
+						Swal.fire({
+							icon: 'error',
+							title: 'Lỗi mạng!',
+							text: 'Không thể kết nối đến máy chủ.'
+						});
+					}
+				});
+			});
+		});
+	</script>
+}

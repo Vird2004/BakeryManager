@@ -22,6 +22,7 @@ namespace BakeryManager.Controllers
             };
             return View(cartVM);
         }
+        
         public async Task<IActionResult> Add(long Id)
         {
             ProductModel product = await _dataContext.Products.FindAsync(Id);
