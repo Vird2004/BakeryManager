@@ -1,5 +1,6 @@
 ﻿
 
+
 <div class="col-sm-3">
     @Html.Partial("_SidebarPartial")
 </div>
@@ -9,7 +10,7 @@
 		<!--product-details-->
 		<div class="col-sm-5">
 			<div class="view-product">
-				<img src="~/images/@Model.Image" alt="" />
+				<img src="~/media/products/@Model.Image" alt="" />
 				<h3>ZOOM</h3>
 			</div>
 			<div id="similar-product" class="carousel slide" data-ride="carousel">
@@ -208,86 +209,39 @@
 
 	<div class="recommended_items">
 		<!--recommended_items-->
-		<h2 class="title text-center">recommended items</h2>
+		<h2 class="title text-center">Related Products</h2>
 
 		<div id="recommended-item-carousel" class="carousel slide" data-ride="carousel">
 			<div class="carousel-inner">
+
 				<div class="item active">
-					<div class="col-sm-4">
-						<div class="product-image-wrapper">
-							<div class="single-products">
-								<div class="productinfo text-center">
-									<img src="images/home/recommend1.jpg" alt="" />
-									<h2>$56</h2>
-									<p>Easy Polo Black Edition</p>
-									<button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button>
+					@foreach (var relatedProduct in @ViewBag.RelatedProducts as IEnumerable<ProductModel>)
+					{
+						<div class="col-sm-4">
+							<div class="product-image-wrapper">
+								<div class="single-products">
+
+
+									<div class="productinfo text-center">
+										<a asp-action="Detail" asp-controller="Product" asp-route-Id="@relatedProduct.Id">
+											<img src="~/media/products/@relatedProduct.Image" alt="@relatedProduct.Name" width="100px" height="200px" />
+											<h2>@relatedProduct.Price.ToString("#,##0 VNĐ")</h2>
+											<p>@relatedProduct.Name</p>
+											<p>Danh mục: @relatedProduct.Category.Name</p>
+											
+										</a>
+
+									</div>
+
+
 								</div>
+
 							</div>
 						</div>
-					</div>
-					<div class="col-sm-4">
-						<div class="product-image-wrapper">
-							<div class="single-products">
-								<div class="productinfo text-center">
-									<img src="images/home/recommend2.jpg" alt="" />
-									<h2>$56</h2>
-									<p>Easy Polo Black Edition</p>
-									<button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-sm-4">
-						<div class="product-image-wrapper">
-							<div class="single-products">
-								<div class="productinfo text-center">
-									<img src="images/home/recommend3.jpg" alt="" />
-									<h2>$56</h2>
-									<p>Easy Polo Black Edition</p>
-									<button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button>
-								</div>
-							</div>
-						</div>
-					</div>
+					}
+
 				</div>
-				<div class="item">
-					<div class="col-sm-4">
-						<div class="product-image-wrapper">
-							<div class="single-products">
-								<div class="productinfo text-center">
-									<img src="images/home/recommend1.jpg" alt="" />
-									<h2>$56</h2>
-									<p>Easy Polo Black Edition</p>
-									<button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-sm-4">
-						<div class="product-image-wrapper">
-							<div class="single-products">
-								<div class="productinfo text-center">
-									<img src="images/home/recommend2.jpg" alt="" />
-									<h2>$56</h2>
-									<p>Easy Polo Black Edition</p>
-									<button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-sm-4">
-						<div class="product-image-wrapper">
-							<div class="single-products">
-								<div class="productinfo text-center">
-									<img src="images/home/recommend3.jpg" alt="" />
-									<h2>$56</h2>
-									<p>Easy Polo Black Edition</p>
-									<button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
+
 			</div>
 			<a class="left recommended-item-control" href="#recommended-item-carousel" data-slide="prev">
 				<i class="fa fa-angle-left"></i>
@@ -296,6 +250,12 @@
 				<i class="fa fa-angle-right"></i>
 			</a>
 		</div>
-	</div><!--/recommended_items-->
+
+	</div><
 
 </div>
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

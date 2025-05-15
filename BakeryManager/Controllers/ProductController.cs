@@ -28,13 +28,20 @@ namespace BakeryManager.Controllers
             return View(products);
         }
 
-        public async Task<IActionResult> Details(int Id )
+        public async Task<IActionResult> Details(long Id )
         {
             
             if(Id == null) return RedirectToAction("Index");
 
             var productsById = _dataContext.Products.Where(p => p.Id == Id).FirstOrDefault();
+            var relatedProducts = await _dataContext.Products
+    .Include(p => p.Category)
+    .Where(p => p.CategoryId == productsById.CategoryId && p.Id != productsById.Id)
+    .Take(4)
+    .ToListAsync();
 
+
+            ViewBag.RelatedProducts = relatedProducts;
             return View(productsById);
         }
     }

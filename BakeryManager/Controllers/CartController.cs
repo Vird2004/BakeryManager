@@ -22,7 +22,7 @@ namespace BakeryManager.Controllers
             };
             return View(cartVM);
         }
-        
+
         public async Task<IActionResult> Add(long Id)
         {
             ProductModel product = await _dataContext.Products.FindAsync(Id);
@@ -43,7 +43,9 @@ namespace BakeryManager.Controllers
             TempData["success"] = "Add Product to cart Sucessfully! ";
             return Redirect(Request.Headers["Referer"].ToString());
         }
-         public async Task<IActionResult> Decrease(int Id) {
+
+
+        public async Task<IActionResult> Decrease(int Id) {
             List<CartItemModel> cart = HttpContext.Session.GetJson<List<CartItemModel>>("Cart");
 
             CartItemModel cartItem = cart.Where(c => c.ProductId == Id).FirstOrDefault();
