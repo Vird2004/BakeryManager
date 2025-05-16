@@ -24,6 +24,8 @@ namespace BakeryManager.Models
         public string Status { get; set; }
         public int CategoryId { get; set; }
         public CategoryModel Category { get; set; }
+
+        public RatingModel Ratings { get; set; }
         [NotMapped]
         [FileExtention]
         public IFormFile? ImageUpload { get; set; }
