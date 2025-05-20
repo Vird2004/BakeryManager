@@ -31,12 +31,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Views\Order\" />
     <Folder Include="wwwroot\backend\css\" />
     <Folder Include="wwwroot\backend\images\" />
     <Folder Include="wwwroot\images\home\" />
     <Folder Include="wwwroot\images\product-details\" />
+    <Folder Include="wwwroot\media\sliders\" />
     <Folder Include="wwwroot\media\products\" />
   </ItemGroup>
 
