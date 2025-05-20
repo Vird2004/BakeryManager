@@ -11,6 +11,7 @@ namespace BakeryManager.Repository
         }
         public DbSet<ProductModel> Products { get; set; }
         public DbSet<CategoryModel> Categories { get; set; }
+        public DbSet<SliderModel> Sliders { get; set; }
 
         public DbSet<RatingModel> Ratings { get; set; }
         public DbSet<OrderModel> Orders { get; set; }
