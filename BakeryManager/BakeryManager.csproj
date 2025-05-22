@@ -36,6 +36,7 @@
     <Folder Include="wwwroot\backend\images\" />
     <Folder Include="wwwroot\images\home\" />
     <Folder Include="wwwroot\images\product-details\" />
+    <Folder Include="wwwroot\media\logo\" />
     <Folder Include="wwwroot\media\sliders\" />
     <Folder Include="wwwroot\media\products\" />
   </ItemGroup>
