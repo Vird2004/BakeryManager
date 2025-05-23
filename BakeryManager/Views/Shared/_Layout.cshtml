@@ -257,6 +257,11 @@
 
 	</footer><!--/Footer-->
 
+	<!--fanpage plugin-->
+	<div id="fb-root"></div>
+	<script async defer crossorigin="anonymous" src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v22.0"></script>
+
+	
 
 
 	<script src="~/js/jquery.js"></script>
@@ -266,5 +271,13 @@
 	<script src="~/js/jquery.prettyPhoto.js"></script>
 	<script src="~/js/main.js"></script>
 	@await RenderSectionAsync("Scripts", required: false)
+
+	<div id="fb-root"></div>
+	<script async defer crossorigin="anonymous"
+			src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v18.0"
+			nonce="abc123">
+	</script>
+
+
 </body>
 </html>
