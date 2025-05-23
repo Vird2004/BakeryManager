@@ -1,0 +1,42 @@
+﻿@model ContactModel
+
+<div class="row py-4">
+    <div class="col-md-4 mb-3">
+        <div class="companyinfo text-center">
+            <img src="~/media/logo/@Model.LogoImage" width="200" height="120" class="img-fluid mb-3" alt="Logo" />
+            <div>@Html.Raw(@Model.Description)</div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="map-responsive">
+            @Html.Raw(@Model.Map)
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="address p-3 border rounded bg-light">
+            <h5><strong>Name:</strong> @Model.Name</h5>
+            <h5><strong>Email:</strong> @Model.Email</h5>
+            <h5><strong>Phone:</strong> @Model.Phone</h5>
+        </div>
+    </div>
+</div>
+
+<style>
+    .map-responsive {
+        overflow: hidden;
+        padding-bottom: 56.25%;
+        position: relative;
+        height: 0;
+    }
+
+    .map-responsive iframe {
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        border: 0;
+    }
+</style>
