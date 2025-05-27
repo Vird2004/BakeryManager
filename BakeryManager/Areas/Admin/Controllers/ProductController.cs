@@ -14,25 +14,67 @@ namespace BakeryManager.Areas.Admin.Controllers
     [Authorize(Roles = "Admin, Staff")]
     public class ProductController : Controller
     {
-        
+
 
         private readonly DataContext _dataContext;
-        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IWebHostEnvironment _webHostEnviroment;
         public ProductController(DataContext context, IWebHostEnvironment webHostEnvironment)
         {
             _dataContext = context;
-            _webHostEnvironment = webHostEnvironment;
+            _webHostEnviroment = webHostEnvironment;
         }
+
+        [Route("Index")]
+        [HttpGet]
         public async Task<IActionResult> Index()
-        { 
-            return View(await _dataContext.Products.OrderByDescending(p => p.Id).Include(p => p.Category).ToListAsync());
+        {
+            return View(await _dataContext.Products.OrderByDescending(p => p.Id).Include(c => c.Category).ToListAsync());
+        }
+
+        [Route("CreateProductQuantity")]
+        [HttpGet]
+        public async Task<IActionResult> CreateProductQuantity(long Id)
+        {
+            var productbyquantity = await _dataContext.ProductQuantities.Where(pq => pq.ProductId == Id).ToListAsync();
+            ViewBag.ProductByQuantity = productbyquantity;
+            ViewBag.ProductId = Id;
+            return View();
+        }
+
+        [Route("UpdateMoreQuantity")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateMoreQuantity(ProductQuantityModel productQuantityModel)
+        {
+            // Get the product to update
+            var product = _dataContext.Products.Find(productQuantityModel.ProductId);
+
+            if (product == null)
+            {
+                return NotFound(); // Handle product not found scenario
+            }
+            product.Quantity += productQuantityModel.Quantity;
+
+            productQuantityModel.Quantity = productQuantityModel.Quantity;
+            productQuantityModel.ProductId = productQuantityModel.ProductId;
+            productQuantityModel.Date = DateTime.Now;
+
+
+            _dataContext.Add(productQuantityModel);
+            _dataContext.Products.Update(product);
+            _dataContext.ProductQuantities.Add(productQuantityModel);
+
+            _dataContext.SaveChangesAsync();
+            TempData["success"] = "Thêm số lượng sản phẩm thành công";
+            return RedirectToAction("CreateProductQuantity", "Product", new { Id = productQuantityModel.ProductId });
         }
 
         [Route("Create")]
+
         public IActionResult Create()
         {
-            ViewBag.Categories = new SelectList(_dataContext.Categories, "Id","Name");
-
+            ViewBag.Categories = new SelectList(_dataContext.Categories, "Id", "Name");
+           
             return View();
         }
 
@@ -42,36 +84,35 @@ namespace BakeryManager.Areas.Admin.Controllers
         public async Task<IActionResult> Create(ProductModel product)
         {
             ViewBag.Categories = new SelectList(_dataContext.Categories, "Id", "Name", product.CategoryId);
+            
 
             if (ModelState.IsValid)
             {
-                // Validate the image file
                 product.Slug = product.Name.Replace(" ", "-");
                 var slug = await _dataContext.Products.FirstOrDefaultAsync(p => p.Slug == product.Slug);
-                if(slug != null)
+                if (slug != null)
                 {
-                    ModelState.AddModelError("", "Sản phẩm đã tồn tại");
+                    ModelState.AddModelError("", "Sản phẩm đã có trong database");
                     return View(product);
                 }
 
-                if (product.ImageUpload != null) 
+                if (product.ImageUpload != null)
                 {
-                    string uploadsDir = Path.Combine(_webHostEnvironment.WebRootPath, "media/products");
-                    Directory.CreateDirectory(uploadsDir);
+                    string uploadsDir = Path.Combine(_webHostEnviroment.WebRootPath, "media/products");
                     string imageName = Guid.NewGuid().ToString() + "_" + product.ImageUpload.FileName;
                     string filePath = Path.Combine(uploadsDir, imageName);
 
                     FileStream fs = new FileStream(filePath, FileMode.Create);
                     await product.ImageUpload.CopyToAsync(fs);
-                    fs.Close(); 
+                    fs.Close();
                     product.Image = imageName;
-
                 }
-                
+
                 _dataContext.Add(product);
                 await _dataContext.SaveChangesAsync();
                 TempData["success"] = "Thêm sản phẩm thành công";
                 return RedirectToAction("Index");
+
             }
             else
             {
@@ -87,13 +128,13 @@ namespace BakeryManager.Areas.Admin.Controllers
                 string errorMessage = string.Join("\n", errors);
                 return BadRequest(errorMessage);
             }
-
-            
             return View(product);
         }
 
+
         [Route("Edit")]
-        public async Task<IActionResult> Edit(int Id)
+
+        public async Task<IActionResult> Edit(long Id)
         {
             ProductModel product = await _dataContext.Products.FindAsync(Id);
             ViewBag.Categories = new SelectList(_dataContext.Categories, "Id", "Name", product.CategoryId);
@@ -101,6 +142,7 @@ namespace BakeryManager.Areas.Admin.Controllers
 
             return View(product);
         }
+
         [Route("Edit")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -108,7 +150,7 @@ namespace BakeryManager.Areas.Admin.Controllers
         {
             var existed_product = _dataContext.Products.Find(product.Id); //tìm sp theo id product
             ViewBag.Categories = new SelectList(_dataContext.Categories, "Id", "Name", product.CategoryId);
-           
+            
 
             if (ModelState.IsValid)
             {
@@ -116,34 +158,14 @@ namespace BakeryManager.Areas.Admin.Controllers
 
                 if (product.ImageUpload != null)
                 {
-                    
-                    //upload new picture
-                    string uploadsDir = Path.Combine(_webHostEnvironment.WebRootPath, "media/products");
+                    string uploadsDir = Path.Combine(_webHostEnviroment.WebRootPath, "media/products");
                     string imageName = Guid.NewGuid().ToString() + "_" + product.ImageUpload.FileName;
                     string filePath = Path.Combine(uploadsDir, imageName);
-                   
-                    //delete old image
-                    string oldfilePath = Path.Combine(uploadsDir, existed_product.Image);
 
-                    // Check if the file exists before attempting to delete
-                    try
-                    {
-                        if (System.IO.File.Exists(oldfilePath))
-                        {
-                            System.IO.File.Delete(oldfilePath);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        ModelState.AddModelError("", "Có lỗi xảy ra khi xóa hình ảnh: " + ex.Message);
-                    }
-                    // Save the new image
                     FileStream fs = new FileStream(filePath, FileMode.Create);
                     await product.ImageUpload.CopyToAsync(fs);
                     fs.Close();
                     existed_product.Image = imageName;
-
-                   
                 }
 
 
@@ -177,53 +199,22 @@ namespace BakeryManager.Areas.Admin.Controllers
             return View(product);
         }
 
-        [Route("Delete")]
-        public async Task<IActionResult> Delete(int Id)
+        [HttpPost]
+        public async Task<IActionResult> Delete(long Id)
         {
-            // Find the product by Id
             ProductModel product = await _dataContext.Products.FindAsync(Id);
-
-            // Check if the product exists
-            if (product == null)
+            if (!string.Equals(product.Image, "noname.jpg"))
             {
-                TempData["error"] = "Sản phẩm không tồn tại.";
-                return RedirectToAction("Index");
-            }
-
-            // Check if the image is not the default one
-            if (!string.IsNullOrEmpty(product.Image) && !string.Equals(product.Image, "noname.jpg"))
-            {
-                string uploadsDir = Path.Combine(_webHostEnvironment.WebRootPath, "media/products");
+                string uploadsDir = Path.Combine(_webHostEnviroment.WebRootPath, "media/products");
                 string oldfilePath = Path.Combine(uploadsDir, product.Image);
-
-                // Check if the file exists before attempting to delete
-                try
+                if (System.IO.File.Exists(oldfilePath))
                 {
-                    if(System.IO.File.Exists(oldfilePath))
-                    {
-                        System.IO.File.Delete(oldfilePath);
-                    }
-                }
-                catch(Exception ex)
-                {
-                    ModelState.AddModelError("", "Có lỗi xảy ra khi xóa hình ảnh: " + ex.Message);
+                    System.IO.File.Delete(oldfilePath);
                 }
             }
-
-            // Remove the product from the database
             _dataContext.Products.Remove(product);
-
-            try
-            {
-                await _dataContext.SaveChangesAsync();
-                TempData["success"] = "Sản phẩm đã được xóa thành công.";
-            }
-            catch (Exception ex)
-            {
-                // Log the exception (consider using a logging framework)
-                TempData["error"] = "Có lỗi xảy ra khi xóa sản phẩm: " + ex.Message;
-            }
-
+            await _dataContext.SaveChangesAsync();
+            TempData["success"] = "sản phẩm đã được xóa thành công";
             return RedirectToAction("Index");
         }
     }

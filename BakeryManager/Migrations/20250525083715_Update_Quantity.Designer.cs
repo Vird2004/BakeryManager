@@ -4,6 +4,7 @@ using BakeryManager.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BakeryManager.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250525083715_Update_Quantity")]
+    partial class Update_Quantity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -227,9 +230,6 @@ namespace BakeryManager.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("ShippingCost")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -268,14 +268,8 @@ namespace BakeryManager.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<long?>("Quantity")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Slug")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<long?>("SoldOut")
-                        .HasColumnType("bigint");
 
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
@@ -298,11 +292,15 @@ namespace BakeryManager.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<long>("ProductId")
-                        .HasColumnType("bigint");
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
 
-                    b.Property<long>("Quantity")
-                        .HasColumnType("bigint");
+                    b.Property<int>("Quantity")
+                        .HasMaxLength(100)
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -344,31 +342,6 @@ namespace BakeryManager.Migrations
                         .IsUnique();
 
                     b.ToTable("Ratings");
-                });
-
-            modelBuilder.Entity("BakeryManager.Models.ShippingModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("City")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("District")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Ward")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Shippings");
                 });
 
             modelBuilder.Entity("BakeryManager.Models.SliderModel", b =>

@@ -29,5 +29,8 @@ namespace BakeryManager.Models
         [NotMapped]
         [FileExtention]
         public IFormFile? ImageUpload { get; set; }
+
+        public long? Quantity { get; set; }
+        public long? SoldOut { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using BakeryManager.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BakeryManager.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250524052215_AddWishAndCompare")]
+    partial class AddWishAndCompare
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,27 +131,6 @@ namespace BakeryManager.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("BakeryManager.Models.CompareModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<long>("ProductId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("Compares");
-                });
-
             modelBuilder.Entity("BakeryManager.Models.ContactModel", b =>
                 {
                     b.Property<string>("Name")
@@ -227,9 +209,6 @@ namespace BakeryManager.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("ShippingCost")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -268,14 +247,8 @@ namespace BakeryManager.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<long?>("Quantity")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Slug")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<long?>("SoldOut")
-                        .HasColumnType("bigint");
 
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
@@ -285,28 +258,6 @@ namespace BakeryManager.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("BakeryManager.Models.ProductQuantityModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long>("ProductId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("Quantity")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ProductQuantities");
                 });
 
             modelBuilder.Entity("BakeryManager.Models.RatingModel", b =>
@@ -346,31 +297,6 @@ namespace BakeryManager.Migrations
                     b.ToTable("Ratings");
                 });
 
-            modelBuilder.Entity("BakeryManager.Models.ShippingModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("City")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("District")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Ward")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Shippings");
-                });
-
             modelBuilder.Entity("BakeryManager.Models.SliderModel", b =>
                 {
                     b.Property<int>("Id")
@@ -398,27 +324,6 @@ namespace BakeryManager.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Sliders");
-                });
-
-            modelBuilder.Entity("BakeryManager.Models.WishlistModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<long>("ProductId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("Wishlists");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -554,17 +459,6 @@ namespace BakeryManager.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BakeryManager.Models.CompareModel", b =>
-                {
-                    b.HasOne("BakeryManager.Models.ProductModel", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("BakeryManager.Models.OrderDetails", b =>
                 {
                     b.HasOne("BakeryManager.Models.ProductModel", "Product")
@@ -592,17 +486,6 @@ namespace BakeryManager.Migrations
                     b.HasOne("BakeryManager.Models.ProductModel", "Product")
                         .WithOne("Ratings")
                         .HasForeignKey("BakeryManager.Models.RatingModel", "ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("BakeryManager.Models.WishlistModel", b =>
-                {
-                    b.HasOne("BakeryManager.Models.ProductModel", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
