@@ -2523,4 +2523,20 @@ h2.title {
   color: #FE980F;
 }
 
+.nav-justified > li {
+	flex: 1;
+	display: flex;
+	justify-content: center;
+}
+
+.nav-justified {
+	display: flex;
+	gap: 10px;
+}
+
+	.nav-justified .btn {
+		width: 100%;
+		padding: 10px 15px;
+	}
+
 

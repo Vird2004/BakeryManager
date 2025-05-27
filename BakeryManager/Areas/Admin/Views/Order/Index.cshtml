@@ -24,7 +24,7 @@
             <tr>
                 <th>Id</th>
                 <th>Order Code</th>
-                
+                <th>Shipping Cost</th>
                 <th>UserName</th>
                 <th>Order Status</th>
                 <th>Created Date</th>
@@ -37,7 +37,7 @@
                 <tr>
                     <td>@item.Id</td>
                     <td>@item.OrderCode</td>
-                    
+                    <td>@item.ShippingCost.ToString("#,##0 đ")</td>
                     <td>@item.UserName</td>
                     <td>
                         @if (item.Status == 1)
@@ -66,11 +66,4 @@
     </table>
 
 </body>
-
-@section Scripts {
-    <script>
-        let table = new DataTable('#myTable');
-    </script>
-}
 </html>
-

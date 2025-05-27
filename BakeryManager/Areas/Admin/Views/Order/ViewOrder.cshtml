@@ -40,8 +40,10 @@
                     subtotal = item.Quantity * item.Price; //số lượng * giá
                     total += subtotal;
                     <tr>
-                        <input type="hidden" asp-for="@item.OrderCode" class="getId" />
-                        <td>@item.Id</td>
+                        
+                        <td>
+                            <input type="hidden" asp-for="@item.OrderCode" class="getId" />
+                            @item.Id</td>
                         <td>@item.OrderCode</td>
                         <td>@item.UserName</td>
                         <td>@item.Product.Name</td>
@@ -59,7 +61,7 @@
                     <td></td>
 
                     <td>Tổng : @total.ToString("#,##0 đ")</td>
-                    @* <td>Shipping : @ViewBag.ShippingCost.ToString("#,##0 đ")</td>*@
+                    <td>Shipping : @ViewBag.ShippingCost.ToString("#,##0 đ")</td>
 
                     <td>
                         @if (@ViewBag.Status != 3)

@@ -28,22 +28,14 @@ namespace BakeryManager.Areas.Admin.Controllers
         [Route("ViewOrder")]
         public async Task<IActionResult> ViewOrder(string ordercode)
         {
-            var Order = await _dataContext.Orders
-                .Where(o => o.OrderCode == ordercode)
-                .FirstOrDefaultAsync();
+            var DetailsOrder = await _dataContext.OrderDetails.Include(od => od.Product)
+                .Where(od => od.OrderCode == ordercode).ToListAsync();
 
-            if (Order == null)
-            {
-                return NotFound();
-            }
+            var Order = _dataContext.Orders.Where(o => o.OrderCode == ordercode).First();
 
-            var DetailsOrder = await _dataContext.OrderDetails
-                .Include(od => od.Product)
-                .Where(od => od.OrderCode == ordercode)
-                .ToListAsync();
-
+            ViewBag.ShippingCost = Order.ShippingCost;
             ViewBag.Status = Order.Status;
-            return View(DetailsOrder ?? new List<OrderDetails>());
+            return View(DetailsOrder);
         }
 
 
