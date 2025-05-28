@@ -37,7 +37,7 @@ namespace BakeryManager.Controllers
                 CartItems = cartItems,
                 GrandTotal = cartItems.Sum(x => x.Quantity * x.Price),
                 ShippingPrice = shippingPrice,
-                //CouponCode = coupon_code
+                CouponCode = coupon_code
 
             };
 
@@ -187,56 +187,56 @@ namespace BakeryManager.Controllers
             }
             return Json(new { shippingPrice });
         }
-        //[HttpPost]
-        //[Route("Cart/GetCoupon")]
-        //public async Task<IActionResult> GetCoupon(CouponModel couponModel, string coupon_value)
-        //{
-        //    var validCoupon = await _dataContext.Coupons
-        //        .FirstOrDefaultAsync(x => x.Name == coupon_value && x.Quantity >= 1);
+        [HttpPost]
+        [Route("Cart/GetCoupon")]
+        public async Task<IActionResult> GetCoupon(CouponModel couponModel, string coupon_value)
+        {
+            var validCoupon = await _dataContext.Coupons
+                .FirstOrDefaultAsync(x => x.Name == coupon_value && x.Quantity >= 1);
 
-        //    string couponTitle = validCoupon.Name + " | " + validCoupon?.Description;
+            string couponTitle = validCoupon.Name + " | " + validCoupon?.Description;
 
-        //    if (couponTitle != null)
-        //    {
-        //        TimeSpan remainingTime = validCoupon.DateExpired - DateTime.Now;
-        //        int daysRemaining = remainingTime.Days;
+            if (couponTitle != null)
+            {
+                TimeSpan remainingTime = validCoupon.DateExpired - DateTime.Now;
+                int daysRemaining = remainingTime.Days;
 
-        //        if (daysRemaining >= 0)
-        //        {
-        //            try
-        //            {
-        //                var cookieOptions = new CookieOptions
-        //                {
-        //                    HttpOnly = true,
-        //                    Expires = DateTimeOffset.UtcNow.AddMinutes(30),
-        //                    Secure = true,
-        //                    SameSite = SameSiteMode.Strict // Kiểm tra tính tương thích trình duyệt
-        //                };
+                if (daysRemaining >= 0)
+                {
+                    try
+                    {
+                        var cookieOptions = new CookieOptions
+                        {
+                            HttpOnly = true,
+                            Expires = DateTimeOffset.UtcNow.AddMinutes(30),
+                            Secure = true,
+                            SameSite = SameSiteMode.Strict // Kiểm tra tính tương thích trình duyệt
+                        };
 
-        //                Response.Cookies.Append("CouponTitle", couponTitle, cookieOptions);
-        //                return Ok(new { success = true, message = "Coupon applied successfully" });
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                //trả về lỗi 
-        //                Console.WriteLine($"Error adding apply coupon cookie: {ex.Message}");
-        //                return Ok(new { success = false, message = "Coupon applied failed" });
-        //            }
-        //        }
-        //        else
-        //        {
+                        Response.Cookies.Append("CouponTitle", couponTitle, cookieOptions);
+                        return Ok(new { success = true, message = "Coupon applied successfully" });
+                    }
+                    catch (Exception ex)
+                    {
+                        //trả về lỗi 
+                        Console.WriteLine($"Error adding apply coupon cookie: {ex.Message}");
+                        return Ok(new { success = false, message = "Coupon applied failed" });
+                    }
+                }
+                else
+                {
 
-        //            return Ok(new { success = false, message = "Coupon has expired" });
-        //        }
+                    return Ok(new { success = false, message = "Coupon has expired" });
+                }
 
-        //    }
-        //    else
-        //    {
-        //        return Ok(new { success = false, message = "Coupon not existed" });
-        //    }
+            }
+            else
+            {
+                return Ok(new { success = false, message = "Coupon not existed" });
+            }
 
-        //    return Json(new { CouponTitle = couponTitle });
-        //}
+            return Json(new { CouponTitle = couponTitle });
+        }
 
         [HttpPost]
         [Route("Cart/RemoveShippingCookie")]

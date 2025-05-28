@@ -54,8 +54,8 @@ namespace BakeryManager.Controllers
                 }
                 orderItem.ShippingCost = shippingPrice;
                 //Nhận coupon code
-                //var CouponCode = Request.Cookies["CouponTitle"];
-                //orderItem.CouponCode = CouponCode;
+                var CouponCode = Request.Cookies["CouponTitle"];
+                orderItem.CouponCode = CouponCode;
                 _dataContext.Add(orderItem);
                 _dataContext.SaveChanges();
                 //tạo order detail
@@ -90,5 +90,13 @@ namespace BakeryManager.Controllers
             }
             return View();
         }
+
+        //[HttpGet]
+        //public IActionResult PaymentCallbackVnpay()
+        //{
+        //    var response = _vnPayService.PaymentExecute(Request.Query);
+
+        //    return Json(response);
+        //}
     }
 }
