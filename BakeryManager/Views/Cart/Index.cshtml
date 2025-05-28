@@ -62,11 +62,11 @@
 						<tr>
 							<td rowspan="5">
 								Grand Total: <p class="cart_total_price">@Model.GrandTotal.ToString("#,##0 đ")</p>
-								@*<form>
+								<form>
 									Coupon Code: <input type="text" class="form-control coupon-value" /><span class="text text-success">@Model.CouponCode</span> <br />
 
 									<input type="button" value="Apply" class="btn btn-sm btn-primary btn-apply-coupon" />
-								</form>*@
+								</form>
 
 								Ship cost: <p class="cart_total_price">
 									@Model.ShippingPrice.ToString("#,##0 đ")
@@ -122,7 +122,7 @@
 									<form method="POST" asp-action="CreatePaymentMomo" asp-controller="Payment">
 										<input type="hidden" name="FullName" value="@User.Identity.Name" />
 										<input type="hidden" name="Amount" value="@Model.GrandTotal" />
-										<input type="hidden" name="OrderInfo" value="Thanh toán qua Momo Payment tại HieuTanStore" />
+										<input type="hidden" name="OrderInfo" value="Thanh toán qua Momo Payment tại GrumpyBakery" />
 
 										<button class="btn btn-danger" name="PayUrl" type="submit">Pay with MoMo</button>
 									</form>
@@ -130,7 +130,7 @@
 
 										<input type="hidden" name="Name" value="@User.Identity.Name" />
 										<input type="hidden" name="Amount" value="@Model.GrandTotal" />
-										<input type="hidden" name="OrderDescription" value="Thanh toán qua Vnpay tại HieuTanStore" />
+										<input type="hidden" name="OrderDescription" value="Thanh toán qua Vnpay tại GrumpyBakery" />
 										<input type="hidden" name="OrderType" value="other" />
 
 										<button class="btn btn-success" type="submit">Pay with Vnpay</button>
