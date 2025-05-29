@@ -30,6 +30,74 @@ namespace BakeryManager.Controllers
         {
             return View(new LoginViewModel {ReturnUrl = returnUrl });
         }
+        
+        public async Task<IActionResult> Profile()
+        {
+            if ((bool)!User.Identity?.IsAuthenticated)
+            {
+                // User is not logged in, redirect to login
+                return RedirectToAction("Login", "Account"); // Replace "Account" with your controller name
+            }
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+
+            var user = await _userManage.Users
+                .Where(u => u.Email == userEmail)
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+            { 
+                return NotFound();
+            }
+            
+            return View(user);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateProfile(AppUserModel user)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userById = await _userManage.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (userById == null)
+            {
+                return NotFound();
+            }
+
+            // GÁN LẠI DỮ LIỆU TỪ FORM
+            userById.FullName = user.FullName;
+            userById.Address = user.Address;
+            userById.Age = user.Age;
+            userById.PhoneNumber = user.PhoneNumber;
+
+            // Nếu bạn muốn cập nhật mật khẩu, cần check thêm:
+            if (!string.IsNullOrEmpty(user.PasswordHash))
+            {
+                var passwordHasher = new PasswordHasher<AppUserModel>();
+                userById.PasswordHash = passwordHasher.HashPassword(userById, user.PasswordHash);
+            }
+
+            // CẬP NHẬT BẰNG UserManager
+            var result = await _userManage.UpdateAsync(userById);
+
+            if (result.Succeeded)
+            {
+                TempData["success"] = "Đã cập nhật thông tin thành công";
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+                return View(user);
+            }
+
+            return RedirectToAction("Profile", "Account");
+        }
+
+
+
         [HttpPost]
         public async Task<IActionResult> SendMailForgotPass(AppUserModel user)
         {
