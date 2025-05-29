@@ -12,6 +12,7 @@ namespace BakeryManager.Models
         public string PhoneNumber { get; set; }
 
         public string RoleId { get; set; }
+        public string Token { get; set; } // Token for password reset
     }
     
     }
