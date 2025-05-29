@@ -30,85 +30,85 @@ namespace BakeryManager.Controllers
         {
             return View(new LoginViewModel {ReturnUrl = returnUrl });
         }
-        //[HttpPost]
-        //public async Task<IActionResult> SendMailForgotPass(AppUserModel user)
-        //{
-        //    var checkMail = await _userManage.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
+        [HttpPost]
+        public async Task<IActionResult> SendMailForgotPass(AppUserModel user)
+        {
+            var checkMail = await _userManage.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
 
-        //    if (checkMail == null)
-        //    {
-        //        TempData["error"] = "Email not found";
-        //        return RedirectToAction("ForgotPass", "Account");
-        //    }
-        //    else
-        //    {
-        //        string token = Guid.NewGuid().ToString();
-        //        //update token to user
-        //        checkMail.Token = token;
-        //        _dataContext.Update(checkMail);
-        //        await _dataContext.SaveChangesAsync();
-        //        var receiver = checkMail.Email;
-        //        var subject = "Change password for user " + checkMail.Email;
-        //        var message = "Click on link to change password " +
-        //            "<a href='" + $"{Request.Scheme}://{Request.Host}/Account/NewPass?email=" + checkMail.Email + "&token=" + token + "'>";
+            if (checkMail == null)
+            {
+                TempData["error"] = "Email not found";
+                return RedirectToAction("ForgotPass", "Account");
+            }
+            else
+            {
+                string token = Guid.NewGuid().ToString();
+                //update token to user
+                checkMail.Token = token;
+                _dataContext.Update(checkMail);
+                await _dataContext.SaveChangesAsync();
+                var receiver = checkMail.Email;
+                var subject = "Change password for user " + checkMail.Email;
+                var message = "Click on link to change password " +
+                    "<a href='" + $"{Request.Scheme}://{Request.Host}/Account/NewPass?email=" + checkMail.Email + "&token=" + token + "'>";
 
-        //        await _emailSender.SendEmailAsync(receiver, subject, message);
-        //    }
+                await _emailSender.SendEmailAsync(receiver, subject, message);
+            }
 
 
-        //    TempData["success"] = "An email has been sent to your registered email address with password reset instructions.";
-        //    return RedirectToAction("ForgotPass", "Account");
-        //}
-        //public IActionResult ForgotPass()
-        //{
-        //    return View();
-        //}
-        //public async Task<IActionResult> NewPass(AppUserModel user, string token)
-        //{
-        //    var checkuser = await _userManage.Users
-        //        .Where(u => u.Email == user.Email)
-        //        .Where(u => u.Token == user.Token).FirstOrDefaultAsync();
+            TempData["success"] = "An email has been sent to your registered email address with password reset instructions.";
+            return RedirectToAction("ForgotPass", "Account");
+        }
+        public IActionResult ForgotPass()
+        {
+            return View();
+        }
+        public async Task<IActionResult> NewPass(AppUserModel user, string token)
+        {
+            var checkuser = await _userManage.Users
+                .Where(u => u.Email == user.Email)
+                .Where(u => u.Token == user.Token).FirstOrDefaultAsync();
 
-        //    if (checkuser != null)
-        //    {
-        //        ViewBag.Email = checkuser.Email;
-        //        ViewBag.Token = token;
-        //    }
-        //    else
-        //    {
-        //        TempData["error"] = "Email not found or token is not right";
-        //        return RedirectToAction("ForgotPass", "Account");
-        //    }
-        //    return View();
-        //}
-        //public async Task<IActionResult> UpdateNewPassword(AppUserModel user, string token)
-        //{
-        //    var checkuser = await _userManage.Users
-        //        .Where(u => u.Email == user.Email)
-        //        .Where(u => u.Token == user.Token).FirstOrDefaultAsync();
+            if (checkuser != null)
+            {
+                ViewBag.Email = checkuser.Email;
+                ViewBag.Token = token;
+            }
+            else
+            {
+                TempData["error"] = "Email not found or token is not right";
+                return RedirectToAction("ForgotPass", "Account");
+            }
+            return View();
+        }
+        public async Task<IActionResult> UpdateNewPassword(AppUserModel user, string token)
+        {
+            var checkuser = await _userManage.Users
+                .Where(u => u.Email == user.Email)
+                .Where(u => u.Token == user.Token).FirstOrDefaultAsync();
 
-        //    if (checkuser != null)
-        //    {
-        //        //update user with new password and token
-        //        string newtoken = Guid.NewGuid().ToString();
-        //        // Hash the new password
-        //        var passwordHasher = new PasswordHasher<AppUserModel>();
-        //        var passwordHash = passwordHasher.HashPassword(checkuser, user.PasswordHash);
+            if (checkuser != null)
+            {
+                //update user with new password and token
+                string newtoken = Guid.NewGuid().ToString();
+                // Hash the new password
+                var passwordHasher = new PasswordHasher<AppUserModel>();
+                var passwordHash = passwordHasher.HashPassword(checkuser, user.PasswordHash);
 
-        //        checkuser.PasswordHash = passwordHash;
-        //        checkuser.Token = newtoken;
+                checkuser.PasswordHash = passwordHash;
+                checkuser.Token = newtoken;
 
-        //        await _userManage.UpdateAsync(checkuser);
-        //        TempData["success"] = "Password updated successfully.";
-        //        return RedirectToAction("Login", "Account");
-        //    }
-        //    else
-        //    {
-        //        TempData["error"] = "Email not found or token is not right";
-        //        return RedirectToAction("ForgotPass", "Account");
-        //    }
-        //    return View();
-        //}
+                await _userManage.UpdateAsync(checkuser);
+                TempData["success"] = "Password updated successfully.";
+                return RedirectToAction("Login", "Account");
+            }
+            else
+            {
+                TempData["error"] = "Email not found or token is not right";
+                return RedirectToAction("ForgotPass", "Account");
+            }
+            return View();
+        }
         public async Task<IActionResult> History()
         {
             if ((bool)!User.Identity?.IsAuthenticated)
