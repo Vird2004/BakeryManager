@@ -3,6 +3,7 @@ using BakeryManager.Models;
 using BakeryManager.Models.ViewModels;
 using BakeryManager.Repository;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -249,7 +250,12 @@ namespace BakeryManager.Controllers
         {
             if (ModelState.IsValid)
             {
-                AppUserModel newUser = new AppUserModel { UserName = user.UserName, Email = user.Email };
+                AppUserModel newUser = new AppUserModel
+                {
+                    UserName = user.UserName, // hoặc loginVM.UserName
+                    Email = user.Email,
+                   
+                };
                 IdentityResult result = await _userManage.CreateAsync(newUser, user.Password);
                 if (result.Succeeded)
                 {
@@ -271,5 +277,78 @@ namespace BakeryManager.Controllers
             await HttpContext.SignOutAsync();
             return Redirect(returnUrl);
         }
+
+        public async Task LoginByGoogle()
+        {
+            // Use Google authentication scheme for challenge
+            await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme,
+                new AuthenticationProperties
+                {
+                    RedirectUri = Url.Action("GoogleResponse")
+                });
+        }
+
+        public async Task<IActionResult> GoogleResponse()
+        {
+            var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+
+            if (!result.Succeeded)
+            {
+                // Nếu xác thực không thành công, quay về Login
+                TempData["error"] = "Đăng nhập Google thất bại.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            var claims = result.Principal.Identities.FirstOrDefault().Claims.Select(claim => new
+            {
+                claim.Issuer,
+                claim.OriginalIssuer,
+                claim.Type,
+                claim.Value
+            });
+
+            var email = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            if (string.IsNullOrEmpty(email))
+            {
+                TempData["error"] = "Không lấy được email từ Google.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            var existingUser = await _userManage.FindByEmailAsync(email);
+
+            if (existingUser == null)
+            {
+                string emailName = email.Split('@')[0];
+                var newUser = new AppUserModel
+                {
+                    UserName = emailName,
+                    Email = email,
+                    EmailConfirmed = true
+                };
+
+                // Tạo password giả vì Identity yêu cầu
+                var passwordHasher = new PasswordHasher<AppUserModel>();
+                newUser.PasswordHash = passwordHasher.HashPassword(newUser, "123456789");
+
+                var createUserResult = await _userManage.CreateAsync(newUser);
+                if (!createUserResult.Succeeded)
+                {
+                    TempData["error"] = "Đăng ký tài khoản thất bại.";
+                    return RedirectToAction("Login", "Account");
+                }
+
+                await _signInManager.SignInAsync(newUser, isPersistent: false);
+                TempData["success"] = "Đăng ký và đăng nhập bằng Google thành công.";
+            }
+            else
+            {
+                await _signInManager.SignInAsync(existingUser, isPersistent: false);
+                TempData["success"] = "Đăng nhập bằng Google thành công.";
+            }
+
+            // ✅ Quay về trang chính
+            return RedirectToAction("Index", "Home");
+        }
+
     }
 }
