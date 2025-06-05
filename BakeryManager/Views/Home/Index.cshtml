@@ -1,139 +1,150 @@
 ﻿@model IEnumerable<ProductModel>
+
 @{
 	ViewData["Title"] = "Web quản lý tiệm bánh";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 <partial name="_SliderPartial" />
+
 <div class="col-sm-3">
 	<partial name="_SidebarPartial" />
 </div>
 
 <div class="col-sm-9 padding-right">
 	<div class="features_items">
-		<!--features_items-->
 		<h2 class="title text-center">Features Items</h2>
 
 		@foreach (var item in Model)
 		{
-
 			<div class="col-sm-4">
 				<div class="product-image-wrapper">
 					<div class="single-products">
-
-
 						<div class="productinfo text-center">
-							<a asp-action="Detail" asp-controller="Product" asp-route-Id="@item.Id">
-								<img src="~/media/products/@item.Image" alt="@item.Name" width="100px" height="200px" />
+							<a asp-action="Details" asp-controller="Product" asp-route-Id="@item.Id">
+								<img src="@Url.Content("~/media/products/" + item.Image)" alt="@item.Name" width="100px" height="200px" />
 								<h2>@item.Price.ToString("#,##0 VNĐ")</h2>
 								<p>@item.Name</p>
-								<p>Danh mục: @item.Category.Name</p>
-								
+								<p>Danh mục: @(item.Category?.Name ?? "Chưa phân loại")</p>
 							</a>
-							@*<a asp-action="Add" asp-controller="Cart" asp-route-Id="@item.Id" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</a> *@
-							@if (@item.Quantity == 0)
+
+							@if (item.Quantity == 0)
 							{
-								<button type="button" class="btn btn-default"><i class="fa fa-shopping-cart"></i>Hết hàng</button>
+								<button type="button" class="btn btn-default" disabled>
+									<i class="fa fa-shopping-cart"></i> Hết hàng
+								</button>
 							}
 							else
 							{
-								<button class="btn btn-default add-to-cart" data-product_id="@item.Id"><i class="fa fa-shopping-cart"></i>Thêm giỏ hàng</button>
+								<button class="btn btn-default add-to-cart" data-product_id="@item.Id">
+									<i class="fa fa-shopping-cart"></i> Thêm giỏ hàng
+								</button>
 							}
-
-
 						</div>
-
-
 					</div>
-					<div class="choose">
-						@if (User.Identity?.IsAuthenticated ?? false)
-						{
-							<ul class="nav nav-pills nav-justified">
-								<li><button class="btn btn-danger add-btn-wishlist" data-product_id="@item.Id">Yêu thích</button></li>
-								<li><button class="btn btn-primary add-btn-compare" data-product_id="@item.Id">So sánh</button></li>
-							</ul>
-						}
-					</div>
+
+					@if (User.Identity?.IsAuthenticated ?? false)
+					{
+						<div class="choose text-center mt-2">
+							<div class="btn-group d-flex gap-2 justify-content-center mt-2">
+								<button class="btn btn-danger flex-fill add-btn-wishlist" data-product_id="@item.Id">
+									❤️ Yêu thích
+								</button>
+								<button class="btn btn-warning flex-fill add-btn-compare" data-product_id="@item.Id">
+									⚖️ So sánh
+								</button>
+							</div>
+						</div>
+					}
 				</div>
 			</div>
 		}
-
-	</div><!--features_items-->
+	</div>
 </div>
+
 @section Scripts {
 	<script>
-
-		$('.add-to-cart').click(function () {
-			var Id = $(this).data("product_id");
-
-			//alert(product_id);
-
-			$.ajax({
-				type: "POST",
-				url: "@Url.Action("Add", "Cart")",
-				data: { Id: Id }, // Send data to the server
-
-				success: function (result) {
-					// Handle successful update
-					if (result) {
-
-						Swal.fire("Thêm giỏ hàng thành công.");
-					}
-				}
-
-			});
-		});
-
-	</script>
-	<!---Add to Wishlish Script--->
-	<script>
 		$(document).ready(function () {
-			$('.add-btn-wishlist').click(function () {
+			// Thêm giỏ hàng
+			$('.add-to-cart').click(function () {
 				var Id = $(this).data("product_id");
 
-				//alert(product_id);
+				$.ajax({
+					type: "POST",
+					url: "@Url.Action("Add", "Cart")",
+					data: { Id: Id },
+					success: function (result) {
+						if (result) {
+							Swal.fire("Thêm giỏ hàng thành công.");
+						}
+					}
+				});
+			});
+
+			// Thêm vào danh sách yêu thích
+			$('.add-btn-wishlist').click(function () {
+				var Id = $(this).data("product_id");
 
 				$.ajax({
 					type: "POST",
 					url: "@Url.Action("AddWishlist", "Home")",
-					data: { Id: Id }, // Send data to the server
-
+					data: { Id: Id },
 					success: function (result) {
-						// Handle successful update
 						if (result) {
-
 							Swal.fire("Thêm yêu thích sản phẩm thành công.");
 						}
 					}
-
 				});
 			});
-		});
-	</script>
-	<!---//Add to Wishlish Script--->
-	<!---Add to Wishlish Script--->
-	<script>
-		$(document).ready(function () {
+
+			// Thêm vào danh sách so sánh
 			$('.add-btn-compare').click(function () {
 				var Id = $(this).data("product_id");
-
-				//alert(product_id);
 
 				$.ajax({
 					type: "POST",
 					url: "@Url.Action("AddCompare", "Home")",
-					data: { Id: Id }, // Send data to the server
-
+					data: { Id: Id },
 					success: function (result) {
-						// Handle successful update
 						if (result) {
-
-							Swal.fire("Thêm sao sánh thành công.");
+							Swal.fire("Thêm so sánh thành công.");
 						}
 					}
-
 				});
 			});
 		});
 	</script>
-	<!---//Add to Wishlish Script--->
 }
+
+<style>
+	.productinfo img {
+		transition: transform 0.3s ease;
+	}
+
+		.productinfo img:hover {
+			transform: scale(1.05);
+		}
+
+	.btn-group .btn {
+		font-weight: bold;
+		font-size: 14px;
+		padding: 8px;
+		border-radius: 5px;
+		transition: all 0.2s ease-in-out;
+	}
+
+		.btn-group .btn:hover {
+			transform: translateY(-2px);
+			opacity: 0.95;
+		}
+
+	@@media (max-width: 576px) {
+		.btn-group .btn
+
+	{
+		font-size: 12px;
+		padding: 6px;
+	}
+
+	}
+</style>
