@@ -1,11 +1,14 @@
 using BakeryManager.Areas.Admin.Repository;
 using BakeryManager.Models;
 using BakeryManager.Repository;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 //ConnectionDb GetConnectionString("ConnectedDb")
 builder.Services.AddDbContext<DataContext>(options =>
@@ -32,8 +35,21 @@ builder.Services.AddSession(options =>
 //Khai bao Identity
 builder.Services.AddIdentity<AppUserModel, IdentityRole>()
     .AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
+//Configuration login google account
+builder.Services.AddAuthentication(options =>
+{
+    //options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    //options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    //options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 
+}).AddCookie().AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+{
+    options.ClientId = builder.Configuration.GetSection("GoogleKeys:ClientId").Value;
+    options.ClientSecret = builder.Configuration.GetSection("GoogleKeys:ClientSecret").Value;
+});
 
+builder.Services.AddRazorPages();
+// Configure Identity options
 builder.Services.Configure<IdentityOptions>(options =>
 {
     // Password settings.
@@ -44,13 +60,30 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredLength = 6;
 
    
-    options.User.RequireUniqueEmail = true;
+    options.User.RequireUniqueEmail = false;
 });
 
-var app = builder.Build();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:5172")
+                .AllowAnyHeader()
+                .WithMethods("GET", "POST")
+                .AllowCredentials();
+        });
+});
 
+//Add SignalR
+builder.Services.AddSignalR();
+
+var app = builder.Build();
 //page 404 Error
 app.UseStatusCodePagesWithRedirects("/Home/Error?statuscode={0}");
+
+//session
+app.UseSession();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -59,16 +92,23 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-//session
-app.UseSession();
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseHttpsRedirection();
+
+
+
+
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseWebSockets();
+// UseCors must be called before MapHub.
+app.UseCors("CorsPolicy");
+//Set Signal Hub
 
 app.MapControllerRoute(
     name: "Areas",

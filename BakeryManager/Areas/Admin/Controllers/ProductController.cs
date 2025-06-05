@@ -35,39 +35,49 @@ namespace BakeryManager.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateProductQuantity(long Id)
         {
-            var productbyquantity = await _dataContext.ProductQuantities.Where(pq => pq.ProductId == Id).ToListAsync();
+            var productbyquantity = await _dataContext.ProductQuantities
+                .Where(pq => pq.ProductId == Id)
+                .OrderByDescending(pq => pq.Date)
+                .ToListAsync();
+
             ViewBag.ProductByQuantity = productbyquantity;
             ViewBag.ProductId = Id;
+
             return View();
         }
 
         [Route("UpdateMoreQuantity")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult UpdateMoreQuantity(ProductQuantityModel productQuantityModel)
+        public async Task<IActionResult> UpdateMoreQuantity(ProductQuantityModel productQuantityModel)
         {
-            // Get the product to update
-            var product = _dataContext.Products.Find(productQuantityModel.ProductId);
+            if (!ModelState.IsValid)
+            {
+                TempData["error"] = "Dữ liệu không hợp lệ.";
+                return RedirectToAction("CreateProductQuantity", "Product", new { Id = productQuantityModel.ProductId });
+            }
 
+            var product = await _dataContext.Products.FindAsync(productQuantityModel.ProductId);
             if (product == null)
             {
-                return NotFound(); // Handle product not found scenario
+                return NotFound();
             }
-            product.Quantity += productQuantityModel.Quantity;
 
-            productQuantityModel.Quantity = productQuantityModel.Quantity;
-            productQuantityModel.ProductId = productQuantityModel.ProductId;
+            // Cập nhật số lượng tổng
+            product.Quantity = (product.Quantity ?? 0) + productQuantityModel.Quantity;
+
+            // Lưu lịch sử thêm số lượng
             productQuantityModel.Date = DateTime.Now;
 
-
-            _dataContext.Add(productQuantityModel);
             _dataContext.Products.Update(product);
             _dataContext.ProductQuantities.Add(productQuantityModel);
 
-            _dataContext.SaveChangesAsync();
+            await _dataContext.SaveChangesAsync();
+
             TempData["success"] = "Thêm số lượng sản phẩm thành công";
             return RedirectToAction("CreateProductQuantity", "Product", new { Id = productQuantityModel.ProductId });
         }
+
 
         [Route("Create")]
 
@@ -200,22 +210,34 @@ namespace BakeryManager.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(long Id)
         {
-            ProductModel product = await _dataContext.Products.FindAsync(Id);
+            var product = await _dataContext.Products.FindAsync(Id);
+            if (product == null) return NotFound();
+
+            // Xóa ảnh nếu cần
             if (!string.Equals(product.Image, "noname.jpg"))
             {
-                string uploadsDir = Path.Combine(_webHostEnviroment.WebRootPath, "media/products");
-                string oldfilePath = Path.Combine(uploadsDir, product.Image);
-                if (System.IO.File.Exists(oldfilePath))
+                var uploadsDir = Path.Combine(_webHostEnviroment.WebRootPath, "media/products");
+                var oldFilePath = Path.Combine(uploadsDir, product.Image);
+                if (System.IO.File.Exists(oldFilePath))
                 {
-                    System.IO.File.Delete(oldfilePath);
+                    System.IO.File.Delete(oldFilePath);
                 }
             }
+
+            // Xóa dữ liệu liên quan trong ProductQuantities
+            var productQuantities = _dataContext.ProductQuantities.Where(pq => pq.ProductId == product.Id);
+            _dataContext.ProductQuantities.RemoveRange(productQuantities);
+
+            // Xóa sản phẩm
             _dataContext.Products.Remove(product);
             await _dataContext.SaveChangesAsync();
-            TempData["success"] = "sản phẩm đã được xóa thành công";
+
+            TempData["success"] = "Sản phẩm đã được xóa thành công";
             return RedirectToAction("Index");
         }
+
     }
 }

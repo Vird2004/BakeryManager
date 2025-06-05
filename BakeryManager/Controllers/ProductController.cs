@@ -30,32 +30,37 @@ namespace BakeryManager.Controllers
             return View(products);
         }
 
-        public async Task<IActionResult> Details(long Id )
+        public async Task<IActionResult> Details(long Id)
         {
+            if (Id == 0) return RedirectToAction("Index");
 
-            if (Id == null) return RedirectToAction("Index");
+            var productsById = await _dataContext.Products
+                .Include(p => p.Ratings)
+                .Include(p => p.Category)
+                .FirstOrDefaultAsync(p => p.Id == Id);
 
-            var productsById = _dataContext.Products.
-                Include(p => p.Ratings).
-                Where(p => p.Id == Id).FirstOrDefault(); //category = 4
-                                                         //related product
-
+            if (productsById == null)
+                return NotFound();
 
             var relatedProducts = await _dataContext.Products
-            .Where(p => p.CategoryId == productsById.CategoryId && p.Id != productsById.Id)
-            .Take(4)
-            .ToListAsync();
+                .Include(p => p.Category)
+                .Where(p => p.CategoryId == productsById.CategoryId && p.Id != productsById.Id)
+                .Take(4)
+                .ToListAsync();
 
             ViewBag.RelatedProducts = relatedProducts;
 
             var viewModel = new ProductDetailsViewModel
             {
                 ProductDetails = productsById,
-                
+                Name = "",
+                Email = "",
+                Comment = ""
             };
 
             return View(viewModel);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
