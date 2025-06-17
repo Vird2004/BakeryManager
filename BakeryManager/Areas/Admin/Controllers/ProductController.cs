@@ -231,13 +231,26 @@ namespace BakeryManager.Areas.Admin.Controllers
             var productQuantities = _dataContext.ProductQuantities.Where(pq => pq.ProductId == product.Id);
             _dataContext.ProductQuantities.RemoveRange(productQuantities);
 
+            // Xóa dữ liệu liên quan trong OrderDetails (phòng lỗi FK)
+            var relatedOrderDetails = _dataContext.OrderDetails.Where(od => od.ProductId == product.Id);
+            _dataContext.OrderDetails.RemoveRange(relatedOrderDetails);
+
+            // Xóa dữ liệu liên quan trong Wishlist và Compare (nếu có)
+            var relatedWishlist = _dataContext.Wishlists.Where(w => w.ProductId == product.Id);
+            _dataContext.Wishlists.RemoveRange(relatedWishlist);
+
+            var relatedCompare = _dataContext.Compares.Where(c => c.ProductId == product.Id);
+            _dataContext.Compares.RemoveRange(relatedCompare);
+
             // Xóa sản phẩm
             _dataContext.Products.Remove(product);
+
             await _dataContext.SaveChangesAsync();
 
             TempData["success"] = "Sản phẩm đã được xóa thành công";
             return RedirectToAction("Index");
         }
+
 
     }
 }

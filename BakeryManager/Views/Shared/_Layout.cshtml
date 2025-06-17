@@ -30,17 +30,17 @@
                     <div class="col-sm-6">
                         <div class="contactinfo">
                             <ul class="nav nav-pills">
-                                <li><a href="#"><i class="fa fa-phone"></i> +2 95 01 88 821</a></li>
-                                <li><a href="#"><i class="fa fa-envelope"></i> info@domain.com</a></li>
+                                <li><a href="#"><i class="fa fa-phone"></i> +84 337 306 460</a></li>
+                                <li><a href="grumpybakery04@gmail.com"><i class="fa fa-envelope"></i> grumpybakery04@gmail.com</a></li>
                             </ul>
                         </div>
                     </div>
                     <div class="col-sm-6">
                         <div class="social-icons pull-right">
                             <ul class="nav navbar-nav">
-                                <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                                <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-                                <li><a href="#"><i class="fa fa-instagram"></i></a></li>
+                                <li><a href="https://www.facebook.com/hutechuniversity"><i class="fa fa-facebook"></i></a></li>
+                                <li><a href="https://x.com/hutechvietnam"><i class="fa fa-twitter"></i></a></li>
+                                <li><a href="https://www.instagram.com/hutechuniversity/"><i class="fa fa-instagram"></i></a></li>
                             </ul>
                         </div>
                     </div>
@@ -104,14 +104,14 @@
                         <div class="mainmenu pull-left">
                             <ul class="nav navbar-nav collapse navbar-collapse">
                                 <li><a asp-controller="Home" asp-action="Index">Home</a></li>
-                                <li class="dropdown">
+                                @*<li class="dropdown">
                                     <a href="#">Shop<i class="fa fa-angle-down"></i></a>
                                     <ul role="menu" class="sub-menu">
                                         <li><a asp-controller="Product" asp-action="Index">Products</a></li>
                                         <li><a asp-controller="Category" asp-action="Index">Categories</a></li>
                                         <li><a asp-controller="Order" asp-action="Index">Orders</a></li>
                                     </ul>
-                                </li>
+                                </li>*@
                                 <li><a asp-controller="Cart" asp-action="Index">Cart</a></li>
                                 <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
                             </ul>
@@ -147,7 +147,10 @@
             <div class="container">
                 <div class="row">
                     <p class="pull-left">Copyright © 2025 Grumpy Bakery Inc.</p>
-                    <p class="pull-right">Designed by <a href="https://themeum.com" target="_blank">Themeum</a></p>
+                    <p class="pull-right">Designed by <a href="https://www.facebook.com/guisionpaxley04" target="_blank">Granger</a>
+                        <a href="https://www.facebook.com/ritchiguen" target="_blank">Ritchi</a>
+                    </p>
+                    
                 </div>
             </div>
         </div>
@@ -156,6 +159,7 @@
     <!-- Scripts -->
     <script src="~/js/jquery.js"></script>
     <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="~/js/bootstrap.min.js"></script>
     <script src="~/js/jquery.scrollUp.min.js"></script>
     <script src="~/js/price-range.js"></script>
@@ -167,5 +171,156 @@
     <script async defer crossorigin="anonymous" src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v18.0"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
+
+  @*
+        <!-- Chatbot UI -->
+    <div class="chat-icon" onclick="toggleChat()">💬</div>
+    <div class="chat-box" id="chatBox">
+        <div class="chat-header">Gemini Chatbot</div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Nhập tin nhắn..." onkeypress="if(event.key === 'Enter') sendMessage();">
+            <button onclick="sendMessage()">Gửi</button>
+        </div>
+    </div>
+
+    <!-- Chatbot CSS -->
+    <style>
+        .chat-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #28a745;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .chat-box {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 360px;
+            height: 450px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .chat-header {
+            background-color: #28a745;
+            color: white;
+            padding: 12px;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            text-align: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+        }
+
+        .message {
+            margin: 8px 0;
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background-color: #28a745;
+            color: white;
+            margin-left: auto;
+        }
+
+        .bot-message {
+            background-color: #e9ecef;
+            color: #333;
+            margin-right: auto;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+            .chat-input input {
+                flex: 1;
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                margin-right: 10px;
+            }
+
+            .chat-input button {
+                padding: 8px 16px;
+                background-color: #28a745;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+    </style>
+
+    <!-- Chatbot JS -->
+    <script>
+        function toggleChat() {
+            const chatBox = document.getElementById('chatBox');
+            chatBox.style.display = chatBox.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function addMessage(content, isUser) {
+            const messages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ' + (isUser ? 'user-message' : 'bot-message');
+            messageDiv.textContent = content;
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) {
+                addMessage("Vui lòng nhập tin nhắn!", false);
+                return;
+            }
+            addMessage(message, true);
+            input.value = '';
+
+            try {
+                const response = await fetch('/Gemini/Chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    addMessage(data.response, false);
+                } else {
+                    addMessage('Lỗi: ' + data.error, false);
+                }
+            } catch (error) {
+                addMessage('Lỗi: ' + error.message, false);
+            }
+        }
+    </script>
+  *@
 </body>
 </html>

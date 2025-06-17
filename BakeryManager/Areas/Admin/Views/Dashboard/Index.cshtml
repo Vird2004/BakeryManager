@@ -1,46 +1,47 @@
 ﻿@{
     ViewData["Title"] = "Dashboard";
 }
-<div class="row">
-    <div class="container-fluid">
-        <div class="col-md-12">
-            <h5>Thống kê số lượng</h5>
-            <ul>
-                <li>Tổng đơn hàng : @ViewBag.CountProduct</li>
-                <li>Tổng sản phẩm : @ViewBag.CountProduct</li>
-                <li>Tổng danh mục sản phẩm : @ViewBag.CountCategory</li>
-                <li>Tổng khách hàng : @ViewBag.CountUser</li>
+<div class="container my-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="mb-3">📊 Thống kê số lượng</h4>
+            <ul class="list-group list-group-flush shadow-sm">
+                <li class="list-group-item">🧾 Tổng đơn hàng: <strong>@ViewBag.CountOrder</strong></li>
+                <li class="list-group-item">🧁 Tổng sản phẩm: <strong>@ViewBag.CountProduct</strong></li>
+                <li class="list-group-item">📁 Tổng danh mục sản phẩm: <strong>@ViewBag.CountCategory</strong></li>
+                <li class="list-group-item">👤 Tổng khách hàng: <strong>@ViewBag.CountUser</strong></li>
             </ul>
         </div>
-        <div class="col-md-12">
+    </div>
 
-            <h5>Thống kê bán hàng</h5>
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="mb-3">📈 Thống kê bán hàng</h4>
             <div class="row">
-                <div class="col-md-4">
-                    <p>Lọc theo ngày tháng</p>
-                    <form>
-                        Ngày:
-
-                        <input type="text" class="form-control" id="datepicker">
-                        <button type="button" class="btn btn-primary btn-filter-date">Lọc theo ngày</button>
-                    </form>
+                <div class="col-md-4 mb-2">
+                    <label for="datepicker">Lọc theo ngày</label>
+                    <div class="input-group">
+                        <input type="text" id="datepicker" class="form-control" placeholder="Chọn ngày" />
+                        <button type="button" class="btn btn-primary btn-filter-date">Lọc</button>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <p>Lọc theo</p>
-                    <p>
-                        <select class="form-control filter-date">
-                            <option value="last_month">Tháng trước</option>
-                            <option value="this_month">Tháng này</option>
-                            <option value="all_year">Cả năm</option>
-                        </select>
-                    </p>
+                <div class="col-md-4 mb-2">
+                    <label for="filter-date-select">Lọc theo khoảng</label>
+                    <select class="form-control filter-date" id="filter-date-select">
+                        <option value="last_month">Tháng trước</option>
+                        <option value="this_month">Tháng này</option>
+                        <option value="all_year">Cả năm</option>
+                    </select>
                 </div>
             </div>
 
-            <div id="myfirstchart" style="height: 250px;"></div>
+            <div class="mt-4">
+                <div id="myfirstchart" style="height: 300px;"></div>
+            </div>
         </div>
     </div>
 </div>
+
 @section Scripts {
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
@@ -121,3 +122,18 @@
         });
     </script>
 }
+
+<style>
+    #myfirstchart {
+        background: #fff;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    .list-group-item {
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+</style>

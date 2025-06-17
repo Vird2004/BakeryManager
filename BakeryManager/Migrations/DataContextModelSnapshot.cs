@@ -219,6 +219,34 @@ namespace BakeryManager.Migrations
                     b.ToTable("Coupons");
                 });
 
+            modelBuilder.Entity("BakeryManager.Models.MomoInfoModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("DatePaid")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrderId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrderInfo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MomoInfos");
+                });
+
             modelBuilder.Entity("BakeryManager.Models.OrderDetails", b =>
                 {
                     b.Property<int>("Id")
@@ -265,6 +293,9 @@ namespace BakeryManager.Migrations
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentMethod")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("ShippingCost")
                         .HasColumnType("decimal(18,2)");

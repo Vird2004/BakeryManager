@@ -25,6 +25,7 @@ namespace BakeryManager.Repository
         public DbSet<ShippingModel> Shippings { get; set; }
         public DbSet<CouponModel> Coupons { get; set; }
         public DbSet<StatisticalModel> Statisticals { get; set; }
+        public DbSet<MomoInfoModel> MomoInfos { get; set; }
     }
     
     }
