@@ -33,12 +33,19 @@
                         </div>
                     </a>
 
-                    <div class="choose">
-                        <ul class="nav nav-pills nav-justified">
-                            <li><a href="#"><i class="fa fa-plus-square"></i>Add to wishlist</a></li>
-                            <li><a href="#"><i class="fa fa-plus-square"></i>Add to compare</a></li>
-                        </ul>
-                    </div>
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+                        <div class="choose text-center mt-2">
+                            <div class="btn-group d-flex gap-2 justify-content-center mt-2">
+                                <button class="btn btn-danger flex-fill add-btn-wishlist" data-product_id="@item.Id">
+                                    ❤️ Yêu thích
+                                </button>
+                                <button class="btn btn-warning flex-fill add-btn-compare" data-product_id="@item.Id">
+                                    ⚖️ So sánh
+                                </button>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         }
@@ -49,4 +56,32 @@
 
 </div>
 
+<style>
+    .productinfo img {
+        transition: transform 0.3s ease;
+    }
 
+        .productinfo img:hover {
+            transform: scale(1.05);
+        }
+
+    .btn-group .btn {
+        font-weight: bold;
+        font-size: 14px;
+        padding: 8px;
+        border-radius: 5px;
+        transition: all 0.2s ease-in-out;
+    }
+
+        .btn-group .btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+
+    @@media (max-width: 576px) {
+        .btn-group .btn {
+            font-size: 12px;
+            padding: 6px;
+        }
+    }
+</style>

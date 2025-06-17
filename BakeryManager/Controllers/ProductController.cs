@@ -32,34 +32,35 @@ namespace BakeryManager.Controllers
 
         public async Task<IActionResult> Details(long Id)
         {
-            if (Id == 0) return RedirectToAction("Index");
-
-            var productsById = await _dataContext.Products
-                .Include(p => p.Ratings)
+            var product = await _dataContext.Products
                 .Include(p => p.Category)
                 .FirstOrDefaultAsync(p => p.Id == Id);
 
-            if (productsById == null)
+            if (product == null)
+            {
                 return NotFound();
+            }
 
             var relatedProducts = await _dataContext.Products
-                .Include(p => p.Category)
-                .Where(p => p.CategoryId == productsById.CategoryId && p.Id != productsById.Id)
+                .Where(p => p.CategoryId == product.CategoryId && p.Id != Id)
                 .Take(4)
                 .ToListAsync();
 
-            ViewBag.RelatedProducts = relatedProducts;
+            var ratings = await _dataContext.Ratings
+                .Where(r => r.ProductId == Id)
+                .ToListAsync();
 
             var viewModel = new ProductDetailsViewModel
             {
-                ProductDetails = productsById,
-                Name = "",
-                Email = "",
-                Comment = ""
+                ProductDetails = product
             };
+
+            ViewBag.RelatedProducts = relatedProducts;
+            ViewBag.Ratings = ratings;
 
             return View(viewModel);
         }
+
 
 
         [HttpPost]

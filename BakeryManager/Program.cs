@@ -1,6 +1,10 @@
-using BakeryManager.Areas.Admin.Repository;
+﻿using BakeryManager.Areas.Admin.Repository;
+using BakeryManager.Hubs;
 using BakeryManager.Models;
+using BakeryManager.Models.MoMo;
 using BakeryManager.Repository;
+using BakeryManager.Services.Gemini;
+using BakeryManager.Services.Momo;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
@@ -9,7 +13,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//Connect MomoAPI
+builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MomoAPI"));
+builder.Services.AddScoped<IMomoService, MomoService>();
 
+//PayPal 
+//builder.Services.Configure<PayPalOptionModel>(builder.Configuration.GetSection("PayPal"));
+//builder.Services.AddScoped<IPayPalService, PayPalService>();
 //ConnectionDb GetConnectionString("ConnectedDb")
 builder.Services.AddDbContext<DataContext>(options =>
 {
@@ -68,15 +78,23 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         builder =>
         {
-            builder.WithOrigins("http://localhost:5172")
+            builder.WithOrigins("http://localhost:7044")
                 .AllowAnyHeader()
+               
                 .WithMethods("GET", "POST")
                 .AllowCredentials();
         });
+
 });
 
 //Add SignalR
 builder.Services.AddSignalR();
+
+// ✅ Đăng ký HttpClient
+builder.Services.AddHttpClient();
+
+// ✅ Đăng ký GeminiService
+builder.Services.AddScoped<IGeminiService, GeminiService>();
 
 var app = builder.Build();
 //page 404 Error
@@ -126,5 +144,8 @@ app.MapControllerRoute(
 // Seed data
 var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<DataContext>();
 SeedData.SeedingData(context);
+
+// UseCors must be called before MapHub.
+app.MapHub<ChatHub>("/Realtime/Index");
 
 app.Run();
